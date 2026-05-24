@@ -58,6 +58,66 @@ No build step, no test suite, no linter configured.
 - **Spacing:** Use intentional, consistent spacing tokens — not random arbitrary values.
 - **Depth:** Surfaces should have a layering system (base → elevated → floating), not all sit at the same z-plane.
 
+## Git & Deployment
+
+- When pushing multiple files to GitHub, ALWAYS use `git` CLI via Bash (`git add`, `git commit`, `git push`) rather than calling MCP file push tools one-by-one.
+- Only use GitHub MCP `push_files` for single-file edits or when git CLI is unavailable.
+
+## Screenshot Workflow
+
+**Always serve on localhost** — never screenshot a `file:///` URL.
+
+Start the local server (in background) before taking screenshots:
+```bash
+python -m http.server 8000
+```
+
+**Setup (first time only):**
+```bash
+brew install node
+npm install -g playwright
+playwright install chromium
+```
+
+Create `screenshot.mjs` in the project root if it doesn't exist:
+```js
+import { chromium } from 'playwright';
+import fs from 'fs';
+import path from 'path';
+
+const url = process.argv[2] || 'http://localhost:8000';
+const label = process.argv[3] || '';
+const dir = './screenshots';
+fs.mkdirSync(dir, { recursive: true });
+const existing = fs.readdirSync(dir).filter(f => f.endsWith('.png')).length;
+const filename = path.join(dir, `screenshot-${existing + 1}${label ? '-' + label : ''}.png`);
+
+const browser = await chromium.launch();
+const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
+await page.goto(url);
+await page.screenshot({ path: filename, fullPage: true });
+await browser.close();
+console.log('Saved:', filename);
+```
+
+**Taking screenshots:**
+```bash
+node screenshot.mjs http://localhost:8000
+node screenshot.mjs http://localhost:8000 label   # saves as screenshot-N-label.png
+```
+
+After screenshotting, read the PNG with the Read tool — Claude can see and analyze the image directly.
+
+**Comparison checklist:**
+- Spacing/padding, font size/weight/line-height
+- Colors (exact hex), alignment, border-radius, shadows
+- Image sizing, interactive state visibility
+
+**Rules:**
+- Do at least 2 comparison rounds against the reference. Stop only when no visible differences remain or user says so.
+- If the server is already running, do not start a second instance.
+- Screenshots are saved to `./screenshots/` and are never overwritten (auto-incremented).
+
 ## Hard Rules
 
 - Do not add sections, features, or content not requested.
