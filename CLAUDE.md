@@ -21,6 +21,20 @@ pip install Pillow
 
 No build step, no test suite, no linter configured.
 
+## Design Spec
+
+The approved redesign spec is at [`docs/superpowers/specs/2026-05-25-orange-ink-redesign-design.md`](docs/superpowers/specs/2026-05-25-orange-ink-redesign-design.md). Read it before touching `index.html`, `style.css`, or `app.js`. Key decisions locked in the spec:
+
+- **Palette:** only `#E8631A` (orange) + white/dark bg. No other colors.
+- **Dot background:** pure CSS `radial-gradient` across the entire page.
+- **Fonts:** Caveat (headings) + Space Grotesk (body), both from Google Fonts.
+- **Layout:** single column — header → collage stage → nav → looper → about/footer.
+- **Panels:** `rgba(255,255,255,0.6)` light / `rgba(0,0,0,0.55)` dark — frosted over dots.
+- **Theme toggle:** sun/moon SVG button, persisted in `localStorage`.
+- **Nav:** hand-drawn SVG arrows + Caveat labels "вчера" / "завтра" + date in center.
+- **Looper:** UI shell only — 4 tracks, transport bar. Audio logic deferred.
+- **About:** always-visible footer panel with bio + social icon links.
+
 ## Architecture
 
 **Two independent parts that share only the `collages/` directory:**
