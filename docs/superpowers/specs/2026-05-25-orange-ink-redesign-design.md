@@ -6,7 +6,7 @@ _2026-05-25_
 Full redesign of the daily-collage viewer at `index.html` / `style.css` / `app.js`.  
 Stack: static HTML + plain CSS + vanilla JS, served via GitHub Pages. No framework, no build step.
 
-**Visual reference:** [`.brainstorm/fullpage-black-dots.html`](../../.brainstorm/fullpage-black-dots.html) — финальный мокап, согласованный с автором. Содержит точные SVG-пути стикеров, позиции, размеры и стрелки. При реализации сверяться с ним напрямую.
+**Visual reference:** [`.brainstorm/fullpage-black-dots.html`](../../.brainstorm/fullpage-black-dots.html) — ориентировочный мокап для понимания общего направления. SVG-стикеры, их позиции, размеры и стрелки не финальные — будут дорабатываться отдельно. Использовать как настроение и структуру, не как точный пиксель-в-пиксель эталон.
 
 ---
 
