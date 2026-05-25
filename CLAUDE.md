@@ -10,10 +10,10 @@ Before writing ANY frontend code (HTML, CSS, JavaScript) in ANY session, WITHOUT
 
 ```bash
 # Generate collage for today
-python generate.py
+python scripts/generate.py
 
 # Generate collage for a specific date
-python generate.py 2025-01-15
+python scripts/generate.py 2025-01-15
 
 # Install dependency
 pip install Pillow
@@ -23,7 +23,7 @@ No build step, no test suite, no linter configured.
 
 ## Design Spec
 
-The approved redesign spec is at [`docs/superpowers/specs/2026-05-25-orange-ink-redesign-design.md`](docs/superpowers/specs/2026-05-25-orange-ink-redesign-design.md). Read it before touching `index.html`, `style.css`, or `app.js`. Key decisions locked in the spec:
+The approved redesign spec is at [`docs/specs/2026-05-25-orange-ink-redesign-design.md`](docs/specs/2026-05-25-orange-ink-redesign-design.md). Read it before touching `index.html`, `style.css`, or `app.js`. Key decisions locked in the spec:
 
 - **Palette:** only `#E8631A` (orange) + white/dark bg. No other colors.
 - **Dot background:** pure CSS `radial-gradient` across the entire page.
@@ -39,7 +39,7 @@ The approved redesign spec is at [`docs/superpowers/specs/2026-05-25-orange-ink-
 
 **Two independent parts that share only the `collages/` directory:**
 
-1. **Generator** (`generate.py`) — pure Python + Pillow. Reads PNGs from `images/`, picks 4–7 at random using the date as a seed, composites them onto a 1080×1080 white canvas with random scale (25–55%), rotation (±15°), and a soft drop shadow. Saves to `collages/YYYY-MM-DD.png`. The date seed makes output deterministic — same date always produces the same collage.
+1. **Generator** (`scripts/generate.py`) — pure Python + Pillow. Reads PNGs from `images/`, picks 4–7 at random using the date as a seed, composites them onto a 1080×1080 white canvas with random scale (25–55%), rotation (±15°), and a soft drop shadow. Saves to `collages/YYYY-MM-DD.png`. The date seed makes output deterministic — same date always produces the same collage.
 
 2. **Viewer** (`index.html` + `app.js` + `style.css`) — static page served via GitHub Pages. `app.js` derives the collage URL from the current date (`collages/YYYY-MM-DD.png`), probes whether the file exists, and shows a placeholder if not. Navigation buttons shift the date by ±1 day; "tomorrow" is disabled when `current >= today`.
 
@@ -93,7 +93,7 @@ npm install -g playwright
 playwright install chromium
 ```
 
-Create `screenshot.mjs` in the project root if it doesn't exist:
+Create `scripts/screenshot.mjs` if it doesn't exist:
 ```js
 import { chromium } from 'playwright';
 import fs from 'fs';
@@ -116,8 +116,8 @@ console.log('Saved:', filename);
 
 **Taking screenshots:**
 ```bash
-node screenshot.mjs http://localhost:8000
-node screenshot.mjs http://localhost:8000 label   # saves as screenshot-N-label.png
+node scripts/screenshot.mjs http://localhost:8000
+node scripts/screenshot.mjs http://localhost:8000 label   # saves as screenshot-N-label.png
 ```
 
 After screenshotting, read the PNG with the Read tool — Claude can see and analyze the image directly.
