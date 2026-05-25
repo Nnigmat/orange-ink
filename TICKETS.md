@@ -35,7 +35,9 @@ background-image: radial-gradient(circle at 1px 1px, var(--dot-color) 1.5px, tra
 ### A-8 · OG-теги для шаринга
 Добавить в `<head>`:
 - `og:title`, `og:description`, `og:image` (один из коллажей или статичная картинка)
-- `twitter:card`
+
+### A-9 · twitter:card
+Добавить `<meta name="twitter:card" content="summary_large_image">` и `twitter:image` (URL картинки). Зависит от A-8 — нужен тот же `og:image` URL.
 
 ---
 
