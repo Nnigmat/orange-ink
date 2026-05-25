@@ -27,7 +27,7 @@ jobs:
         run: pip install Pillow
 
       - name: Generate collage
-        run: python generate.py ${{ github.event.inputs.date || '' }}
+        run: python scripts/generate.py ${{ github.event.inputs.date || '' }}
 
       - name: Commit and push
         run: |
