@@ -43,9 +43,9 @@ The approved redesign spec is at [`docs/specs/2026-05-25-orange-ink-redesign-des
 
 2. **Viewer** (`index.html` + `app.js` + `style.css`) — static page served via GitHub Pages. `app.js` derives the collage URL from the current date (`collages/YYYY-MM-DD.png`), probes whether the file exists, and shows a placeholder if not. Navigation buttons shift the date by ±1 day; "tomorrow" is disabled when `current >= today`.
 
-**Automation** (`.github/workflows/collage.yml`) — runs at 23:49 UTC daily, executes `generate.py`, commits `collages/` if changed. Supports `workflow_dispatch` with an optional `date` input.
+**Automation** (`.github/workflows/collage.yml`) — runs at 23:49 UTC daily, executes `scripts/generate.py`, commits `collages/` if changed. Supports `workflow_dispatch` with an optional `date` input.
 
-**Key constraint:** `images/` holds the source PNGs that feed the generator. Without files there, `generate.py` exits early. `collages/` is git-tracked so GitHub Pages can serve the files statically.
+**Key constraint:** `images/` holds the source PNGs that feed the generator. Without files there, `scripts/generate.py` exits early. `collages/` is git-tracked so GitHub Pages can serve the files statically.
 
 ## Frontend Output Defaults
 
