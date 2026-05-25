@@ -1,13 +1,39 @@
 const collageImg = document.getElementById('collage');
-const placeholder = document.getElementById('placeholder');
-const dateLabel = document.getElementById('date-label');
-const btnPrev = document.getElementById('btn-prev');
-const btnNext = document.getElementById('btn-next');
-const btnDownload = document.getElementById('btn-download');
+const stickers   = document.getElementById('stickers');
+const navDate    = document.getElementById('nav-date');
+const btnPrev    = document.getElementById('btn-prev');
+const btnNext    = document.getElementById('btn-next');
+const themeToggle = document.getElementById('theme-toggle');
 
+// ── Theme ──
+function applyTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  localStorage.setItem('theme', theme);
+}
+
+themeToggle.addEventListener('click', () => {
+  applyTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark');
+});
+
+const savedTheme = localStorage.getItem('theme');
+if (savedTheme) applyTheme(savedTheme);
+
+// ── Looper UI ──
+document.querySelectorAll('.loop-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.loop-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+document.querySelectorAll('.mute-btn').forEach(btn => {
+  btn.addEventListener('click', () => btn.classList.toggle('muted'));
+});
+
+// ── Date helpers ──
 function toDateStr(d) {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const y   = d.getFullYear();
+  const m   = String(d.getMonth() + 1).padStart(2, '0');
   const day = String(d.getDate()).padStart(2, '0');
   return `${y}-${m}-${day}`;
 }
@@ -21,48 +47,34 @@ function offsetDate(dateStr, days) {
   return toDateStr(new Date(y, m - 1, d + days));
 }
 
-function formatDate(dateStr) {
-  const [y, m, d] = dateStr.split('-').map(Number);
-  return new Date(y, m - 1, d).toLocaleDateString('ru-RU', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  });
+function formatDateDots(dateStr) {
+  const [, m, d] = dateStr.split('-');
+  return `${d} · ${m} · ${dateStr.slice(0, 4)}`;
 }
 
+// ── Collage ──
 let current = todayStr();
 
 function showCollage(dateStr) {
   current = dateStr;
-  dateLabel.textContent = formatDate(dateStr);
+  navDate.textContent = formatDateDots(dateStr);
   btnNext.disabled = dateStr >= todayStr();
 
   collageImg.style.display = 'none';
-  btnDownload.style.display = 'none';
-  placeholder.style.display = 'block';
-  placeholder.textContent = '';
+  stickers.style.display = 'block';
 
-  const src = `collages/${dateStr}.png`;
+  const src   = `collages/${dateStr}.png`;
   const probe = new Image();
 
   probe.onload = () => {
     collageImg.src = src;
     collageImg.style.display = 'block';
-    placeholder.style.display = 'none';
-    btnDownload.style.display = 'inline-block';
-    btnDownload.onclick = () => {
-      const a = document.createElement('a');
-      a.href = src;
-      a.download = `orange-ink-${dateStr}.png`;
-      a.click();
-    };
+    stickers.style.display = 'none';
   };
 
   probe.onerror = () => {
-    placeholder.textContent =
-      dateStr === todayStr()
-        ? 'коллаж появится сегодня ночью'
-        : 'коллаж за эту дату недоступен';
+    collageImg.style.display = 'none';
+    stickers.style.display = 'block';
   };
 
   probe.src = src;
