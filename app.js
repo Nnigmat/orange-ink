@@ -60,6 +60,7 @@ const TRANSLATIONS = {
 
 function applyLang(lang) {
   const t = TRANSLATIONS[lang];
+  if (!t) return;
   document.documentElement.lang = lang;
 
   document.querySelectorAll('[data-i18n]').forEach(el => {
@@ -81,9 +82,11 @@ function applyLang(lang) {
   });
 
   const transportBtns = document.querySelectorAll('.transport-btn');
-  transportBtns[0].setAttribute('aria-label', t['aria.play']);
-  transportBtns[1].setAttribute('aria-label', t['aria.stop']);
-  transportBtns[2].setAttribute('aria-label', t['aria.clear']);
+  if (transportBtns.length >= 3) {
+    transportBtns[0].setAttribute('aria-label', t['aria.play']);
+    transportBtns[1].setAttribute('aria-label', t['aria.stop']);
+    transportBtns[2].setAttribute('aria-label', t['aria.clear']);
+  }
 
   document.querySelectorAll('.lang-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.lang === lang);
