@@ -61,7 +61,7 @@ function showCollage(dateStr) {
   btnNext.disabled = dateStr >= todayStr();
 
   collageImg.style.display = 'none';
-  stickers.style.display = 'block';
+  stickers.style.display = 'none';
 
   const src   = `collages/${dateStr}.png`;
   const probe = new Image();
