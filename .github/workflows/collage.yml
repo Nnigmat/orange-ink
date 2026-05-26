@@ -39,6 +39,6 @@ jobs:
           else
             INPUT_DATE="${{ github.event.inputs.date }}"
             DATE="${INPUT_DATE:-$(date -u +%Y-%m-%d)}"
-            git commit -m "collage: ${DATE}"
+            git commit -m "collage: ${DATE} (light + dark)"
             git push
           fi
