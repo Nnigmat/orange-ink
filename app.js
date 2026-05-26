@@ -8,7 +8,7 @@ const TRANSLATIONS = {
     'looper.noRec':  'нет записи',
     'looper.bars':   'такты',
     'about.title':   'о проекте',
-    'about.text':    'ежедневные коллажи из фотографий. каждую ночь — новый. собирается само.',
+    'about.text':    '<b>Привет! Я nikita nigma, и это «Оранжевые кляксы» — мой личный эксперимент на стыке арта и музыки.</b><br><br>У меня есть 74 свои картинки. Раз в неделю алгоритм перемешивает их и собирает в случайный коллаж. Для меня это вызов: я сам смотрю на то, что получилось, ловлю вайб и пишу под этот визуал новый трек.<br><br>Каждую неделю здесь будет появляться свежий коллаж и моя музыкальная история к нему. Без спешки и суеты — чистый поток творчества.<br><br>Заглядывай, слушай, смотри и пиши в комменты, как этот хаос линий звучит для тебя. А если сам пишешь музыку или стихи — подхватывай волну и делись своим звуком!',
     'site.title':    'оранжевые кляксы',
     'social.email':  'почта',
     'aria.prev':         'прошлая неделя',
@@ -28,7 +28,7 @@ const TRANSLATIONS = {
     'looper.noRec':  'no recording',
     'looper.bars':   'bars',
     'about.title':   'about',
-    'about.text':    'daily collages from photos. every night — a new one. self-assembled.',
+    'about.text':    '<b>Hey! I\'m nikita nigma, and this is «Orange Blots» — my personal experiment at the intersection of art and music.</b><br><br>I have 74 original drawings. Once a week the algorithm shuffles them and assembles a random collage. For me it\'s a challenge: I look at what came out, catch the vibe, and write a new track to that visual.<br><br>Every week a fresh collage and my musical story to it will appear here. No rush, no fuss — pure creative flow.<br><br>Drop by, listen, look, and leave a comment about how this chaos of lines sounds to you. And if you write music or poetry yourself — catch the wave and share your sound!',
     'site.title':    'orange blots',
     'social.email':  'email',
     'aria.prev':         'previous week',
@@ -48,7 +48,7 @@ const TRANSLATIONS = {
     'looper.noRec':  'keine Aufnahme',
     'looper.bars':   'Takte',
     'about.title':   'über',
-    'about.text':    'tägliche Collagen aus Fotos. jede Nacht — eine neue. wird selbst zusammengestellt.',
+    'about.text':    '<b>Hey! Ich bin nikita nigma, und das sind «Orange Kleckse» — mein persönliches Experiment an der Schnittstelle von Kunst und Musik.</b><br><br>Ich habe 74 eigene Bilder. Einmal pro Woche durchmischt der Algorithmus sie und baut eine zufällige Collage. Für mich ist das eine Herausforderung: Ich schaue selbst auf das, was entstanden ist, fange den Vibe ein und schreibe einen neuen Track zu diesem Visual.<br><br>Jede Woche erscheint hier eine frische Collage und meine musikalische Geschichte dazu. Ohne Hast und Hektik — reiner kreativer Fluss.<br><br>Schau vorbei, hör zu, sieh hin und schreib in die Kommentare, wie dieses Linienchaos für dich klingt. Und wenn du selbst Musik oder Gedichte schreibst — fang die Welle ein und teile deinen Sound!',
     'site.title':    'orange Kleckse',
     'social.email':  'E-Mail',
     'aria.prev':         'letzte Woche',
@@ -68,6 +68,10 @@ function applyLang(lang) {
 
   document.querySelectorAll('[data-i18n]').forEach(el => {
     el.textContent = t[el.dataset.i18n];
+  });
+
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    el.innerHTML = t[el.dataset.i18nHtml];
   });
 
   document.querySelectorAll('[data-i18n-alt]').forEach(el => {
@@ -180,6 +184,7 @@ function showCollage(dateStr) {
 
   collageImg.style.display = 'none';
   stickers.style.display = 'none';
+  btnPrev.disabled = false;
 
   const isDark = document.documentElement.dataset.theme === 'dark';
   const src = isDark ? `collages/${dateStr}-dark.png` : `collages/${dateStr}.png`;
@@ -203,11 +208,13 @@ function showCollage(dateStr) {
       fallback.onerror = () => {
         collageImg.style.display = 'none';
         stickers.style.display = 'flex';
+        btnPrev.disabled = true;
       };
       fallback.src = lightSrc;
     } else {
       collageImg.style.display = 'none';
       stickers.style.display = 'flex';
+      btnPrev.disabled = true;
     }
   };
 
