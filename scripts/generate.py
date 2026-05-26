@@ -3,7 +3,7 @@ import random
 from pathlib import Path
 from datetime import date
 
-from PIL import Image, ImageFilter
+from PIL import Image, ImageChops, ImageFilter, ImageStat
 
 CANVAS_SIZE = 1080
 MIN_IMAGES = 4
@@ -11,9 +11,13 @@ MAX_IMAGES = 7
 MIN_SCALE = 0.25
 MAX_SCALE = 0.55
 MAX_ROTATION = 15
-SHADOW_OFFSET = (8, 12)
-SHADOW_BLUR = 10
-SHADOW_COLOR = (40, 40, 40, 100)
+SHADOW_OFFSET = (4, 6)
+SHADOW_BLUR = 5
+SHADOW_COLOR = (40, 40, 40, 55)
+PLACEMENT_TRIES = 150
+ALLOWED_OVERLAP = 0.18
+DOWNSAMPLE = 4
+MASK_SIZE = CANVAS_SIZE // DOWNSAMPLE  # 270x270
 
 
 def load_images(folder: Path) -> list:
@@ -29,7 +33,27 @@ def make_shadow(image: Image.Image) -> Image.Image:
     return shadow.filter(ImageFilter.GaussianBlur(radius=SHADOW_BLUR))
 
 
-def place_image(canvas: Image.Image, img: Image.Image, rng: random.Random) -> None:
+def get_alpha_small(rotated: Image.Image) -> Image.Image:
+    w, h = rotated.size
+    sw = max(1, w // DOWNSAMPLE)
+    sh = max(1, h // DOWNSAMPLE)
+    small = rotated.resize((sw, sh), Image.LANCZOS)
+    return small.split()[3]
+
+
+def compute_overlap(alpha_small: Image.Image, px: int, py: int, mask: Image.Image) -> float:
+    temp = Image.new("L", (MASK_SIZE, MASK_SIZE), 0)
+    temp.paste(alpha_small, (px, py))
+    return ImageStat.Stat(ImageChops.darker(temp, mask)).sum[0]
+
+
+def update_mask(mask: Image.Image, alpha_small: Image.Image, px: int, py: int) -> None:
+    temp = Image.new("L", (MASK_SIZE, MASK_SIZE), 0)
+    temp.paste(alpha_small, (px, py))
+    mask.paste(ImageChops.lighter(mask, temp))
+
+
+def place_image(canvas: Image.Image, img: Image.Image, rng: random.Random, mask: Image.Image) -> None:
     scale = rng.uniform(MIN_SCALE, MAX_SCALE)
     new_width = int(CANVAS_SIZE * scale)
     new_height = int(img.height * new_width / img.width)
@@ -38,14 +62,30 @@ def place_image(canvas: Image.Image, img: Image.Image, rng: random.Random) -> No
     angle = rng.uniform(-MAX_ROTATION, MAX_ROTATION)
     rotated = resized.rotate(angle, expand=True, fillcolor=(0, 0, 0, 0))
 
-    max_x = max(0, CANVAS_SIZE - rotated.width)
-    max_y = max(0, CANVAS_SIZE - rotated.height)
-    x = rng.randint(0, max_x)
-    y = rng.randint(0, max_y)
+    w, h = rotated.size
+    max_x = max(0, CANVAS_SIZE - w)
+    max_y = max(0, CANVAS_SIZE - h)
+
+    alpha_small = get_alpha_small(rotated)
+    allowance = ImageStat.Stat(alpha_small).sum[0] * ALLOWED_OVERLAP
+
+    best_x = rng.randint(0, max_x)
+    best_y = rng.randint(0, max_y)
+    best_score = max(0.0, compute_overlap(alpha_small, best_x // DOWNSAMPLE, best_y // DOWNSAMPLE, mask) - allowance)
+
+    for _ in range(PLACEMENT_TRIES):
+        x = rng.randint(0, max_x)
+        y = rng.randint(0, max_y)
+        s = max(0.0, compute_overlap(alpha_small, x // DOWNSAMPLE, y // DOWNSAMPLE, mask) - allowance)
+        if s < best_score:
+            best_score = s
+            best_x, best_y = x, y
+
+    update_mask(mask, alpha_small, best_x // DOWNSAMPLE, best_y // DOWNSAMPLE)
 
     shadow = make_shadow(rotated)
-    canvas.paste(shadow, (x + SHADOW_OFFSET[0], y + SHADOW_OFFSET[1]), shadow)
-    canvas.paste(rotated, (x, y), rotated)
+    canvas.paste(shadow, (best_x + SHADOW_OFFSET[0], best_y + SHADOW_OFFSET[1]), shadow)
+    canvas.paste(rotated, (best_x, best_y), rotated)
 
 
 def generate(date_str: str) -> None:
@@ -65,8 +105,9 @@ def generate(date_str: str) -> None:
     selected = rng.sample(all_images, count)
 
     canvas = Image.new("RGBA", (CANVAS_SIZE, CANVAS_SIZE), (255, 255, 255, 255))
+    mask = Image.new("L", (MASK_SIZE, MASK_SIZE), 0)
     for img in selected:
-        place_image(canvas, img, rng)
+        place_image(canvas, img, rng, mask)
 
     output_path = collages_dir / f"{date_str}.png"
     canvas.convert("RGB").save(output_path, "PNG")
