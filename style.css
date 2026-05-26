@@ -95,15 +95,6 @@ body {
 }
 
 /* ── Header ── */
-.header-section {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding-top: 1.75rem;
-  padding-bottom: 1.5rem;
-}
-
 .site-title {
   font-family: 'Pangolin', cursive;
   font-size: clamp(2.4rem, 8vw, 3.6rem);
@@ -138,13 +129,9 @@ body {
 }
 
 .header-controls {
-  position: absolute;
-  top: 50%;
-  right: 1.25rem;
-  transform: translateY(-50%);
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  justify-content: right;
 }
 
 .lang-switcher {
