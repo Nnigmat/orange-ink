@@ -13,7 +13,8 @@ MAX_SCALE = 0.55
 MAX_ROTATION = 15
 SHADOW_OFFSET = (4, 6)
 SHADOW_BLUR = 5
-SHADOW_COLOR = (40, 40, 40, 55)
+SHADOW_COLOR_LIGHT = (40, 40, 40, 55)
+SHADOW_COLOR_DARK  = (180, 180, 180, 45)
 PLACEMENT_TRIES = 150
 ALLOWED_OVERLAP = 0.18
 DOWNSAMPLE = 4
@@ -25,9 +26,9 @@ def load_images(folder: Path) -> list:
     return [Image.open(p).convert("RGBA") for p in pngs]
 
 
-def make_shadow(image: Image.Image) -> Image.Image:
+def make_shadow(image: Image.Image, shadow_color: tuple) -> Image.Image:
     shadow = Image.new("RGBA", image.size, (0, 0, 0, 0))
-    shadow_layer = Image.new("RGBA", image.size, SHADOW_COLOR)
+    shadow_layer = Image.new("RGBA", image.size, shadow_color)
     _, _, _, alpha = image.split()
     shadow.paste(shadow_layer, mask=alpha)
     return shadow.filter(ImageFilter.GaussianBlur(radius=SHADOW_BLUR))
@@ -53,7 +54,7 @@ def update_mask(mask: Image.Image, alpha_small: Image.Image, px: int, py: int) -
     mask.paste(ImageChops.lighter(mask, temp))
 
 
-def place_image(canvas: Image.Image, img: Image.Image, rng: random.Random, mask: Image.Image) -> None:
+def place_image(canvas: Image.Image, img: Image.Image, rng: random.Random, mask: Image.Image, shadow_color: tuple) -> None:
     scale = rng.uniform(MIN_SCALE, MAX_SCALE)
     new_width = int(CANVAS_SIZE * scale)
     new_height = int(img.height * new_width / img.width)
@@ -83,9 +84,18 @@ def place_image(canvas: Image.Image, img: Image.Image, rng: random.Random, mask:
 
     update_mask(mask, alpha_small, best_x // DOWNSAMPLE, best_y // DOWNSAMPLE)
 
-    shadow = make_shadow(rotated)
+    shadow = make_shadow(rotated, shadow_color)
     canvas.paste(shadow, (best_x + SHADOW_OFFSET[0], best_y + SHADOW_OFFSET[1]), shadow)
     canvas.paste(rotated, (best_x, best_y), rotated)
+
+
+def generate_canvas(selected: list, seed: int, bg_color: tuple, shadow_color: tuple) -> Image.Image:
+    rng = random.Random(seed)
+    canvas = Image.new("RGBA", (CANVAS_SIZE, CANVAS_SIZE), bg_color)
+    mask = Image.new("L", (MASK_SIZE, MASK_SIZE), 0)
+    for img in selected:
+        place_image(canvas, img, rng, mask, shadow_color)
+    return canvas
 
 
 def generate(date_str: str) -> None:
@@ -100,18 +110,18 @@ def generate(date_str: str) -> None:
 
     seed = int(date_str.replace("-", ""))
     rng = random.Random(seed)
-
     count = rng.randint(MIN_IMAGES, min(MAX_IMAGES, len(all_images)))
     selected = rng.sample(all_images, count)
 
-    canvas = Image.new("RGBA", (CANVAS_SIZE, CANVAS_SIZE), (255, 255, 255, 255))
-    mask = Image.new("L", (MASK_SIZE, MASK_SIZE), 0)
-    for img in selected:
-        place_image(canvas, img, rng, mask)
+    light = generate_canvas(selected, seed, (255, 255, 255, 255), SHADOW_COLOR_LIGHT)
+    light_path = collages_dir / f"{date_str}.png"
+    light.convert("RGB").save(light_path, "PNG")
+    print(f"Saved: {light_path}")
 
-    output_path = collages_dir / f"{date_str}.png"
-    canvas.convert("RGB").save(output_path, "PNG")
-    print(f"Saved: {output_path}")
+    dark = generate_canvas(selected, seed, (20, 20, 20, 255), SHADOW_COLOR_DARK)
+    dark_path = collages_dir / f"{date_str}-dark.png"
+    dark.convert("RGB").save(dark_path, "PNG")
+    print(f"Saved: {dark_path}")
 
 
 if __name__ == "__main__":
