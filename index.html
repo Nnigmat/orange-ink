@@ -13,24 +13,33 @@
 
     <!-- HEADER -->
     <header class="section header-section">
-      <button class="theme-toggle" id="theme-toggle" aria-label="переключить тему">
-        <!-- Sun (light mode) -->
-        <svg class="icon-sun" width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="14" cy="14" r="5.5" stroke="#E8631A" stroke-width="2.2" stroke-linecap="round"/>
-          <path d="M14 3.5V5.5" stroke="#E8631A" stroke-width="2.2" stroke-linecap="round"/>
-          <path d="M14 22.5V24.5" stroke="#E8631A" stroke-width="2.2" stroke-linecap="round"/>
-          <path d="M3.5 14H5.5" stroke="#E8631A" stroke-width="2.2" stroke-linecap="round"/>
-          <path d="M22.5 14H24.5" stroke="#E8631A" stroke-width="2.2" stroke-linecap="round"/>
-          <path d="M7.05 7.05L8.46 8.46" stroke="#E8631A" stroke-width="2.2" stroke-linecap="round"/>
-          <path d="M19.54 19.54L20.95 20.95" stroke="#E8631A" stroke-width="2.2" stroke-linecap="round"/>
-          <path d="M20.95 7.05L19.54 8.46" stroke="#E8631A" stroke-width="2.2" stroke-linecap="round"/>
-          <path d="M8.46 19.54L7.05 20.95" stroke="#E8631A" stroke-width="2.2" stroke-linecap="round"/>
-        </svg>
-        <!-- Moon (dark mode) -->
-        <svg class="icon-moon" width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M22 15.5C20.5 19.5 16.5 22.5 12 22C7 21.5 3.5 17.5 4 12.5C4.5 8.5 7 5.5 11 4.5C9 7.5 9 12 12.5 15C16 18 20.5 17.5 22 15.5Z" stroke="#E8631A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </button>
+      <div class="header-controls">
+        <div class="lang-switcher" id="lang-switcher">
+          <button class="lang-btn active" data-lang="ru">RU</button>
+          <span class="lang-sep">·</span>
+          <button class="lang-btn" data-lang="en">EN</button>
+          <span class="lang-sep">·</span>
+          <button class="lang-btn" data-lang="de">DE</button>
+        </div>
+        <button class="theme-toggle" id="theme-toggle" aria-label="переключить тему">
+          <!-- Sun (light mode) -->
+          <svg class="icon-sun" width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="14" cy="14" r="5.5" stroke="#E8631A" stroke-width="2.2" stroke-linecap="round"/>
+            <path d="M14 3.5V5.5" stroke="#E8631A" stroke-width="2.2" stroke-linecap="round"/>
+            <path d="M14 22.5V24.5" stroke="#E8631A" stroke-width="2.2" stroke-linecap="round"/>
+            <path d="M3.5 14H5.5" stroke="#E8631A" stroke-width="2.2" stroke-linecap="round"/>
+            <path d="M22.5 14H24.5" stroke="#E8631A" stroke-width="2.2" stroke-linecap="round"/>
+            <path d="M7.05 7.05L8.46 8.46" stroke="#E8631A" stroke-width="2.2" stroke-linecap="round"/>
+            <path d="M19.54 19.54L20.95 20.95" stroke="#E8631A" stroke-width="2.2" stroke-linecap="round"/>
+            <path d="M20.95 7.05L19.54 8.46" stroke="#E8631A" stroke-width="2.2" stroke-linecap="round"/>
+            <path d="M8.46 19.54L7.05 20.95" stroke="#E8631A" stroke-width="2.2" stroke-linecap="round"/>
+          </svg>
+          <!-- Moon (dark mode) -->
+          <svg class="icon-moon" width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M22 15.5C20.5 19.5 16.5 22.5 12 22C7 21.5 3.5 17.5 4 12.5C4.5 8.5 7 5.5 11 4.5C9 7.5 9 12 12.5 15C16 18 20.5 17.5 22 15.5Z" stroke="#E8631A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
       <h1 class="site-title">оранжевые кляксы</h1>
     </header>
 
@@ -40,11 +49,11 @@
     <section class="section stage-section">
       <div class="stage" id="stage">
         <!-- Real collage image (hidden until loaded) -->
-        <img id="collage" alt="коллаж дня" style="display:none">
+        <img id="collage" alt="коллаж дня" data-i18n-alt="collage.alt" style="display:none">
 
         <!-- Empty state (shown when no collage) -->
         <div class="no-collage" id="stickers">
-          <span class="no-collage-text">коллажа нет</span>
+          <span class="no-collage-text" data-i18n="collage.empty">коллажа нет</span>
         </div>
       </div>
     </section>
@@ -59,11 +68,11 @@
           <path d="M12 20 C18 12 22 8 26 4" stroke="#E8631A" stroke-width="4" stroke-linecap="round"/>
           <path d="M12 20 C18 28 22 32 26 36" stroke="#E8631A" stroke-width="4" stroke-linecap="round"/>
         </svg>
-        <span class="arrow-label">вчера</span>
+        <span class="arrow-label" data-i18n="nav.prev">вчера</span>
       </button>
       <span class="nav-date" id="nav-date"></span>
       <button class="arrow-btn" id="btn-next" aria-label="завтра">
-        <span class="arrow-label">завтра</span>
+        <span class="arrow-label" data-i18n="nav.next">завтра</span>
         <svg width="56" height="34" viewBox="0 0 72 40" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M4 20 C17 22 34 18 60 20" stroke="#E8631A" stroke-width="4" stroke-linecap="round"/>
           <path d="M60 20 C54 12 50 8 46 4" stroke="#E8631A" stroke-width="4" stroke-linecap="round"/>
@@ -76,7 +85,7 @@
 
     <!-- LOOPER -->
     <section class="section looper-section">
-      <h2 class="section-title">лупер</h2>
+      <h2 class="section-title" data-i18n="looper.title">лупер</h2>
 
       <div class="tracks">
         <!-- Track 1 -->
@@ -89,7 +98,7 @@
           </button>
           <div class="waveform-area">
             <canvas class="waveform-canvas" width="300" height="48"></canvas>
-            <span class="waveform-hint">нет записи</span>
+            <span class="waveform-hint" data-i18n="looper.noRec">нет записи</span>
           </div>
           <button class="track-btn mute-btn" aria-label="заглушить дорожку 1">
             <span>М</span>
@@ -105,7 +114,7 @@
           </button>
           <div class="waveform-area">
             <canvas class="waveform-canvas" width="300" height="48"></canvas>
-            <span class="waveform-hint">нет записи</span>
+            <span class="waveform-hint" data-i18n="looper.noRec">нет записи</span>
           </div>
           <button class="track-btn mute-btn" aria-label="заглушить дорожку 2">
             <span>М</span>
@@ -121,7 +130,7 @@
           </button>
           <div class="waveform-area">
             <canvas class="waveform-canvas" width="300" height="48"></canvas>
-            <span class="waveform-hint">нет записи</span>
+            <span class="waveform-hint" data-i18n="looper.noRec">нет записи</span>
           </div>
           <button class="track-btn mute-btn" aria-label="заглушить дорожку 3">
             <span>М</span>
@@ -137,7 +146,7 @@
           </button>
           <div class="waveform-area">
             <canvas class="waveform-canvas" width="300" height="48"></canvas>
-            <span class="waveform-hint">нет записи</span>
+            <span class="waveform-hint" data-i18n="looper.noRec">нет записи</span>
           </div>
           <button class="track-btn mute-btn" aria-label="заглушить дорожку 4">
             <span>М</span>
@@ -171,7 +180,7 @@
             <input class="bpm-input" type="number" value="120" min="40" max="300" aria-label="BPM">
           </label>
           <div class="loop-length">
-            <span class="transport-label-text">такты</span>
+            <span class="transport-label-text" data-i18n="looper.bars">такты</span>
             <div class="loop-btns">
               <button class="loop-btn active">1</button>
               <button class="loop-btn">2</button>
@@ -187,8 +196,8 @@
 
     <!-- ABOUT / FOOTER -->
     <footer class="section about-section">
-      <h2 class="section-title">о проекте</h2>
-      <p class="about-text">
+      <h2 class="section-title" data-i18n="about.title">о проекте</h2>
+      <p class="about-text" data-i18n="about.text">
         <b>Я nikita nigma, и это «Оранжевые кляксы» — мой личный эксперимент на стыке арта и музыки.</b><br /><br />
         У меня есть 74 свои картинки. Раз в неделю алгоритм перемешивает их и собирает в случайный коллаж. Для меня это вызов: я сам смотрю на то, что получилось, ловлю вайб и пишу под этот визуал новый трек.
         Каждую неделю здесь будет появляться свежий коллаж и моя музыкальная история к нему. Без спешки и суеты — чистый поток творчества.
@@ -235,7 +244,7 @@
             <rect x="4" y="8" width="24" height="16" rx="3" stroke="currentColor" stroke-width="2.5"/>
             <path d="M4 11 L16 19 L28 11" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          <span class="social-label">почта</span>
+          <span class="social-label" data-i18n="social.email">почта</span>
         </a>
       </div>
     </footer>
