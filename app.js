@@ -109,6 +109,7 @@ const themeToggle = document.getElementById('theme-toggle');
 function applyTheme(theme) {
   document.documentElement.dataset.theme = theme;
   localStorage.setItem('theme', theme);
+  if (typeof current !== 'undefined') showCollage(current);
 }
 
 themeToggle.addEventListener('click', () => {
@@ -180,7 +181,8 @@ function showCollage(dateStr) {
   collageImg.style.display = 'none';
   stickers.style.display = 'none';
 
-  const src   = `collages/${dateStr}.png`;
+  const isDark = document.documentElement.dataset.theme === 'dark';
+  const src = isDark ? `collages/${dateStr}-dark.png` : `collages/${dateStr}.png`;
   const probe = new Image();
 
   probe.onload = () => {
