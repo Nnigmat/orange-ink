@@ -2,11 +2,11 @@ name: Generate Daily Collage
 
 on:
   schedule:
-    - cron: '49 23 * * *'
+    - cron: '49 23 * * 1'
   workflow_dispatch:
     inputs:
       date:
-        description: 'Date to generate (YYYY-MM-DD). Leave empty for today.'
+        description: 'Date to generate (YYYY-MM-DD, should be a Monday). Leave empty for today.'
         required: false
 
 permissions:
