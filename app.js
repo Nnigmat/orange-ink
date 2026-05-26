@@ -1,7 +1,7 @@
 const TRANSLATIONS = {
   ru: {
-    'nav.prev':      'вчера',
-    'nav.next':      'завтра',
+    'nav.prev':      '← неделя',
+    'nav.next':      'неделя →',
     'collage.alt':   'коллаж дня',
     'collage.empty': 'коллажа нет',
     'looper.title':  'лупер',
@@ -11,8 +11,8 @@ const TRANSLATIONS = {
     'about.text':    'ежедневные коллажи из фотографий. каждую ночь — новый. собирается само.',
     'site.title':    'оранжевые кляксы',
     'social.email':  'почта',
-    'aria.prev':         'вчера',
-    'aria.next':         'завтра',
+    'aria.prev':         'прошлая неделя',
+    'aria.next':         'следующая неделя',
     'aria.trackRecord':  'запись дорожки',
     'aria.trackMute':    'заглушить дорожку',
     'aria.play':         'воспроизведение',
@@ -20,8 +20,8 @@ const TRANSLATIONS = {
     'aria.clear':        'очистить',
   },
   en: {
-    'nav.prev':      'yesterday',
-    'nav.next':      'tomorrow',
+    'nav.prev':      '← week',
+    'nav.next':      'week →',
     'collage.alt':   'collage of the day',
     'collage.empty': 'no collage',
     'looper.title':  'looper',
@@ -31,8 +31,8 @@ const TRANSLATIONS = {
     'about.text':    'daily collages from photos. every night — a new one. self-assembled.',
     'site.title':    'orange blots',
     'social.email':  'email',
-    'aria.prev':         'yesterday',
-    'aria.next':         'tomorrow',
+    'aria.prev':         'previous week',
+    'aria.next':         'next week',
     'aria.trackRecord':  'record track',
     'aria.trackMute':    'mute track',
     'aria.play':         'play',
@@ -40,8 +40,8 @@ const TRANSLATIONS = {
     'aria.clear':        'clear',
   },
   de: {
-    'nav.prev':      'gestern',
-    'nav.next':      'morgen',
+    'nav.prev':      '← Woche',
+    'nav.next':      'Woche →',
     'collage.alt':   'Collage des Tages',
     'collage.empty': 'keine Collage',
     'looper.title':  'Looper',
@@ -51,8 +51,8 @@ const TRANSLATIONS = {
     'about.text':    'tägliche Collagen aus Fotos. jede Nacht — eine neue. wird selbst zusammengestellt.',
     'site.title':    'orange Kleckse',
     'social.email':  'E-Mail',
-    'aria.prev':         'gestern',
-    'aria.next':         'morgen',
+    'aria.prev':         'letzte Woche',
+    'aria.next':         'nächste Woche',
     'aria.trackRecord':  'Spur aufnehmen',
     'aria.trackMute':    'Spur stummschalten',
     'aria.play':         'Abspielen',
@@ -145,27 +145,37 @@ function toDateStr(d) {
   return `${y}-${m}-${day}`;
 }
 
-function todayStr() {
-  return toDateStr(new Date());
+function thisWeekMondayStr() {
+  const today = new Date();
+  const dow = today.getDay(); // 0=Sun, 1=Mon … 6=Sat
+  const diff = dow === 0 ? -6 : 1 - dow;
+  const monday = new Date(today.getFullYear(), today.getMonth(), today.getDate() + diff);
+  return toDateStr(monday);
 }
 
-function offsetDate(dateStr, days) {
+function offsetWeeks(dateStr, weeks) {
   const [y, m, d] = dateStr.split('-').map(Number);
-  return toDateStr(new Date(y, m - 1, d + days));
+  return toDateStr(new Date(y, m - 1, d + weeks * 7));
 }
 
-function formatDateDots(dateStr) {
-  const [, m, d] = dateStr.split('-');
-  return `${d} · ${m} · ${dateStr.slice(0, 4)}`;
+function formatWeekRange(mondayStr) {
+  const [y, m, d] = mondayStr.split('-').map(Number);
+  const mon = new Date(y, m - 1, d);
+  const sun = new Date(y, m - 1, d + 6);
+  const pad = n => String(n).padStart(2, '0');
+  const monPart = `${pad(mon.getDate())}.${pad(mon.getMonth() + 1)}`;
+  const sunPart = `${pad(sun.getDate())}.${pad(sun.getMonth() + 1)}`;
+  const year = sun.getFullYear();
+  return `${monPart} – ${sunPart} · ${year}`;
 }
 
 // ── Collage ──
-let current = todayStr();
+let current = thisWeekMondayStr();
 
 function showCollage(dateStr) {
   current = dateStr;
-  navDate.textContent = formatDateDots(dateStr);
-  btnNext.disabled = dateStr >= todayStr();
+  navDate.textContent = formatWeekRange(dateStr);
+  btnNext.disabled = dateStr >= thisWeekMondayStr();
 
   collageImg.style.display = 'none';
   stickers.style.display = 'none';
@@ -187,7 +197,7 @@ function showCollage(dateStr) {
   probe.src = src;
 }
 
-btnPrev.addEventListener('click', () => showCollage(offsetDate(current, -1)));
-btnNext.addEventListener('click', () => showCollage(offsetDate(current, 1)));
+btnPrev.addEventListener('click', () => showCollage(offsetWeeks(current, -1)));
+btnNext.addEventListener('click', () => showCollage(offsetWeeks(current, 1)));
 
 showCollage(current);
