@@ -109,7 +109,7 @@ const themeToggle = document.getElementById('theme-toggle');
 function applyTheme(theme) {
   document.documentElement.dataset.theme = theme;
   localStorage.setItem('theme', theme);
-  if (typeof current !== 'undefined') showCollage(current);
+  if (typeof current !== 'undefined') showCollage(current); // current is in TDZ on initial applyTheme call
 }
 
 themeToggle.addEventListener('click', () => {
@@ -183,6 +183,7 @@ function showCollage(dateStr) {
 
   const isDark = document.documentElement.dataset.theme === 'dark';
   const src = isDark ? `collages/${dateStr}-dark.png` : `collages/${dateStr}.png`;
+  const lightSrc = `collages/${dateStr}.png`;
   const probe = new Image();
 
   probe.onload = () => {
@@ -192,8 +193,22 @@ function showCollage(dateStr) {
   };
 
   probe.onerror = () => {
-    collageImg.style.display = 'none';
-    stickers.style.display = 'block';
+    if (isDark && src !== lightSrc) {
+      const fallback = new Image();
+      fallback.onload = () => {
+        collageImg.src = lightSrc;
+        collageImg.style.display = 'block';
+        stickers.style.display = 'none';
+      };
+      fallback.onerror = () => {
+        collageImg.style.display = 'none';
+        stickers.style.display = 'block';
+      };
+      fallback.src = lightSrc;
+    } else {
+      collageImg.style.display = 'none';
+      stickers.style.display = 'block';
+    }
   };
 
   probe.src = src;
