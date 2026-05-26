@@ -109,11 +109,11 @@ const themeToggle = document.getElementById('theme-toggle');
 function applyTheme(theme) {
   document.documentElement.dataset.theme = theme;
   localStorage.setItem('theme', theme);
-  if (typeof current !== 'undefined') showCollage(current); // current is in TDZ on initial applyTheme call
 }
 
 themeToggle.addEventListener('click', () => {
   applyTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark');
+  showCollage(current);
 });
 
 const savedTheme = localStorage.getItem('theme');
@@ -188,7 +188,7 @@ function showCollage(dateStr) {
 
   probe.onload = () => {
     collageImg.src = src;
-    collageImg.style.display = 'block';
+    collageImg.style.display = 'flex';
     stickers.style.display = 'none';
   };
 
@@ -197,17 +197,17 @@ function showCollage(dateStr) {
       const fallback = new Image();
       fallback.onload = () => {
         collageImg.src = lightSrc;
-        collageImg.style.display = 'block';
+        collageImg.style.display = 'flex';
         stickers.style.display = 'none';
       };
       fallback.onerror = () => {
         collageImg.style.display = 'none';
-        stickers.style.display = 'block';
+        stickers.style.display = 'flex';
       };
       fallback.src = lightSrc;
     } else {
       collageImg.style.display = 'none';
-      stickers.style.display = 'block';
+      stickers.style.display = 'flex';
     }
   };
 
