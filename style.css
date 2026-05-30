@@ -216,6 +216,24 @@ body {
   color: var(--text-muted);
 }
 
+/* ── Sound ── */
+.sound-section {
+  padding: 0;
+  overflow: hidden;
+  border-radius: 8px;
+  background: var(--panel);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 2px 16px 0 rgba(232, 99, 26, 0.10), 0 1px 4px rgba(0,0,0,0.06);
+}
+
+.sound-section iframe {
+  display: block;
+  width: 100%;
+  height: 166px;
+  border: none;
+}
+
 /* ── Nav ── */
 .nav-section {
   display: flex;

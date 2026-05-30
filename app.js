@@ -102,6 +102,9 @@ function applyLang(lang) {
   localStorage.setItem('lang', lang);
 }
 
+let tracks = {};
+let scWidget = null;
+
 const collageImg = document.getElementById('collage');
 const stickers   = document.getElementById('stickers');
 const navDate    = document.getElementById('nav-date');
@@ -117,7 +120,7 @@ function applyTheme(theme) {
 
 themeToggle.addEventListener('click', () => {
   applyTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark');
-  showCollage(current);
+  showCollage(current, true);
 });
 
 const savedTheme = localStorage.getItem('theme');
@@ -174,10 +177,55 @@ function formatWeekRange(mondayStr) {
   return `${monPart} – ${sunPart} · ${year}`;
 }
 
+// ── SoundCloud ──
+function loadTrackForWeek(mondayStr) {
+  const trackUrl = tracks[mondayStr];
+  const soundSection = document.getElementById('sound-section');
+  const soundDivider = document.getElementById('sound-divider');
+  const iframe = document.getElementById('sc-player');
+
+  if (!trackUrl) {
+    soundSection.hidden = true;
+    soundDivider.hidden = true;
+    return;
+  }
+
+  soundSection.hidden = false;
+  soundDivider.hidden = false;
+
+  const params = 'color=%23E8631A&auto_play=false&buying=false&sharing=false&download=false&show_artwork=true&show_playcount=false&show_user=true';
+
+  if (!scWidget) {
+    iframe.src = `https://w.soundcloud.com/player/?url=${encodeURIComponent(trackUrl)}&${params}`;
+    scWidget = SC.Widget(iframe);
+  } else {
+    scWidget.load(trackUrl, {
+      color: '#E8631A',
+      auto_play: false,
+      buying: false,
+      sharing: false,
+      download: false,
+      show_artwork: true,
+      show_playcount: false,
+      show_user: true,
+    });
+  }
+}
+
+async function initTracks() {
+  try {
+    const res = await fetch('tracks.json');
+    tracks = await res.json();
+  } catch (_) {
+    tracks = {};
+  }
+  loadTrackForWeek(current);
+}
+
 // ── Collage ──
 let current = thisWeekMondayStr();
 
-function showCollage(dateStr) {
+function showCollage(dateStr, skipTrack = false) {
   current = dateStr;
   navDate.textContent = formatWeekRange(dateStr);
   btnNext.disabled = dateStr >= thisWeekMondayStr();
@@ -219,9 +267,12 @@ function showCollage(dateStr) {
   };
 
   probe.src = src;
+
+  if (!skipTrack) loadTrackForWeek(dateStr);
 }
 
 btnPrev.addEventListener('click', () => showCollage(offsetWeeks(current, -1)));
 btnNext.addEventListener('click', () => showCollage(offsetWeeks(current, 1)));
 
-showCollage(current);
+showCollage(current, true);
+initTracks();
